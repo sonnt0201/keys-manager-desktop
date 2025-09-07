@@ -42,6 +42,11 @@ export class AppContext extends Observable<AppEvent> {
      * @param entryAuthPassword entry auth raw password  
      */
     public updateEntryKey(entryAuthPassword: string): void {
+
+        if (entryAuthPassword === ""){
+            this._entryKey = ""
+            return;}
+
             const sha256Coder = new Sha256Coder();
             this._entryKey = sha256Coder.hashToHex(entryAuthPassword);
             

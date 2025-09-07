@@ -10,7 +10,8 @@ import { mainWin } from "@/main-process";
 @IPCController({ prefix: "entry-auth" })
 class EntryAuthController implements IObserver<EntryAuthResult>{
 
-    _logger: IMainLogger | undefined = new MainLogger("EntryAuthStateController");
+    _logger: IMainLogger | undefined = undefined
+    // = new MainLogger("EntryAuthStateController");
 
     private _entryAuthService: IEntryAuthService = EntryAuthService.getInstance();
 
@@ -42,6 +43,11 @@ class EntryAuthController implements IObserver<EntryAuthResult>{
     async check (event: any, message: null = null) : Promise <IUserCredModel | null> {
         this._logger?.log( "Checking if user exists...");
         return await this._entryAuthService.checkUserExists();
+    }
+
+    @Handle("logout")
+    async logout (event: any): Promise<void> {
+        return await this._entryAuthService.logout()
     }
 
 }

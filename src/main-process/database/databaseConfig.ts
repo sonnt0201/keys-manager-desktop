@@ -36,7 +36,7 @@ export const databaseConfig: IDatabaseConfig = {
   database: {
     path: path.join(baseDir, dbFile),
     options: {
-      verbose: true,
+      verbose: isDev?true: false,
       foreignKeys: true,
       journalMode: "WAL",
     },

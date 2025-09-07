@@ -13,23 +13,15 @@ import { SecondAuthRegisterCheck } from "./SecondAuthRegisterCheck";
  * @param props.onEntryAuthCompleted - Callback function to be called when entry authentication (registering and logging in) is done and app should be redirected to main page.
  * @returns 
  */
-const Entry = ({ onEntryAuthCompleted }: {
-
-
-  onEntryAuthCompleted?: (state: EntryAuthResult) => void;
+const Entry = ({
+  authState}
+: {
+  authState:EntryAuthResult | "loading" | null
 }) => {
 
-  const { authState, availableUserInfo, updateAuthState } = useEntryAuthState();
+  const { availableUserInfo, updateAuthState } = useEntryAuthState();
   const [secondAuthResult, setSecondAuthResult] = useState<SecondAuthResult>();
-  useEffect(() => {
-    if (authState === "logged-in" && secondAuthResult === "auth-method-already-set") {
-      // If user is logged in, redirect to main page
-      if (onEntryAuthCompleted) {
-        console.log("Entry auth completed, redirecting to main page...");
-        onEntryAuthCompleted(authState);
-      }
-    }
-  }, [authState, secondAuthResult]);
+
 
   return (
     <div className="entry-page " >
@@ -64,7 +56,7 @@ const Entry = ({ onEntryAuthCompleted }: {
         }
         }
       />
-      {authState == "logged-in" && "Authen successfully, redirecting to main page..."}
+      {authState == "logged-in" && secondAuthResult == "auth-method-already-set" && "Authen successfully, redirecting to main page..."}
     </div>
   );
 }

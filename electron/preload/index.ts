@@ -132,7 +132,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     callback: (state: EntryAuthResult) => void
   ) => ipcRenderer.on("entry-auth:state", (_event, value) => callback(value)),
 
-
+  logout: () => ipcRenderer.invoke('entry-auth:logout'),
   // ================== SECOND AUTH API ======================
   secondAuth: {
     create: (pin: string): Promise<SecondAuthResult> =>

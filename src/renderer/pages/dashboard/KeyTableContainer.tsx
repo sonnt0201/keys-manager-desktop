@@ -72,8 +72,8 @@ export const KeyTableContainer = () => {
 
 
     useEffect(() => { // auto hide all revealed key after 30second
-        autoHideAllRevealedKeys()
-    },[revealedKeys])
+        autoHideLatestRevealedKeys()
+    }, [revealedKeys])
 
     useEffect(() => { // open confirm dialog if having pending confirm job
         if (pendingConfirmJob) {
@@ -98,12 +98,17 @@ export const KeyTableContainer = () => {
     }, [pendingConfirmJob])
 
     // auto hide all revealed key after 1 min, should be put in use effect
-    const autoHideAllRevealedKeys = () => {
+    const autoHideLatestRevealedKeys = () => {
         if (revealedKeys.length === 0) return;
 
+        const keyToHide = revealedKeys[revealedKeys.length - 1]
+
         setTimeout(() => {
-            setRevealedKeys([])
-            setNotification("Auto hide all revealed keys")
+            setRevealedKeys(prev => prev.filter(key => key != keyToHide))
+            setErrorNotification(false)
+            setNotification(`Auto hide "${
+                displayedKeys.find(key => key.id === keyToHide.id)?.serviceName
+            }" key`)
         }, 60_000)
     }
 
@@ -144,9 +149,9 @@ export const KeyTableContainer = () => {
 
     // handle all pending job waiting for PIN from user input, call after retrieved PIN from user
     function handlePinSubmit(pin: string) {
-        console.log("PIN submitted: ", pin);
-        console.log("Pending Jobs: ", pendingPINJob)
-        console.log("Key to edit: ", keyToEdit)
+        // console.log("PIN submitted: ", pin);
+        // console.log("Pending Jobs: ", pendingPINJob)
+        // console.log("Key to edit: ", keyToEdit)
 
 
 
@@ -157,10 +162,11 @@ export const KeyTableContainer = () => {
                 setErrorNotification(true);
                 setNotification("Wrong PIN")
             }
-            // console.log("PIN Auth: ", pinAuth)
+            // // console.log("PIN Auth: ", pinAuth)
             try {
                 if (job.createKey) {
                     const result = await window.ipcRenderer.key.create(job.createKey, pin)
+                    setErrorNotification(false)
                     setNotification(`Created a key for "${job.createKey.serviceName}"`)
                     // if (result === "success") getKeys()
                 }
@@ -173,22 +179,31 @@ export const KeyTableContainer = () => {
                             decryptedValue: result.decryptedData
                         })
                         setRevealedKeys(prev => [...prev, newRevealedKey])
+                        setErrorNotification(false)
                         setNotification(`Revealed key for "${job.revealKey.serviceName}"`)
+
+                        // // auto hide revealed key after 1 min
+                        // setTimeout(() => {
+                        //     setRevealedKeys(prev => prev.filter(key => key != newRevealedKey))
+                        // }, 60_000)
+
                     } else {
-                        console.log("Result: ", result.result)
+                        // console.log("Result: ", result.result)
 
                     }
                 }
 
                 if (job.updateKey && keyToEdit) {
 
-                    console.log("Updating new key: ", keyToEdit)
+                    // console.log("Updating new key: ", keyToEdit)
                     const result = await window.ipcRenderer.key.update(keyToEdit, job.updateKey, pin)
-
+                    setErrorNotification(false)
                     setNotification(`Updated key for "${job.updateKey.serviceName}"`)
 
-                    // console.log(result)
+                    // // console.log(result)
                 }
+
+                getKeys();
 
             } catch (e) {
                 setErrorNotification(true)
@@ -201,7 +216,7 @@ export const KeyTableContainer = () => {
         setPendingPINJob([])
 
         setPinDialogOpen(false);
-        getKeys();
+
     }
 
 
@@ -233,7 +248,7 @@ export const KeyTableContainer = () => {
             getKeys();
 
             return;
-            
+
         }
 
 
@@ -247,7 +262,7 @@ export const KeyTableContainer = () => {
             }
 
 
-            console.log("new pending job: ", newJob)
+            // console.log("new pending job: ", newJob)
 
             return [...prev, newJob]
 
@@ -279,7 +294,8 @@ export const KeyTableContainer = () => {
             // handle by type of job storing in pendingConfirmJob
             if (pendingConfirmJob?.deleteKey) {
                 const result = await window.ipcRenderer.key.delete(pendingConfirmJob.deleteKey.id)
-                console.log("Delete result: ", result)
+                // console.log("Delete result: ", result)
+                setErrorNotification(false)
                 setNotification(`Delete key for "${pendingConfirmJob.deleteKey.serviceName}"`)
             }
         } catch (e) {

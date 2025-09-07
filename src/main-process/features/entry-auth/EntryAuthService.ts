@@ -30,7 +30,7 @@ export class EntryAuthService
     set currentAuthState(value: EntryAuthResult) {
         if (value !== this._currentAuthState) {
             this._currentAuthState = value;
-            this._logger.log("Entry Auth State changed to: ",this._currentAuthState)
+            this._logger?.log("Entry Auth State changed to: ",this._currentAuthState)
             this.notify(this._currentAuthState);
         }
     }
@@ -84,7 +84,7 @@ export class EntryAuthService
         // Verify if the user already exists
         // Check if user info file exists
         if (!fs.existsSync(USER_INFO_PATH)) {
-            this._logger.error(`User info file does not exist`);
+            this._logger?.error(`User info file does not exist`);
             this.currentAuthState = "user-not-found"
             return ret; // User does not exist
         }
@@ -94,7 +94,7 @@ export class EntryAuthService
             const data = fs.readFileSync(USER_INFO_PATH, 'utf-8');
             const base64Coder = new Base64Coder();
             const userInfo: IUserCredModel = JSON.parse(base64Coder.defaultDecode(data));
-            this._logger.log(`User info found for: ${userInfo.name}`);
+            this._logger?.log(`User info found for: ${userInfo.name}`);
 
             // dont send password back
             ret = {
@@ -104,14 +104,15 @@ export class EntryAuthService
             };
             return ret; // Return the user info if it exists
         } catch (err) {
-            this._logger.error('Error reading user info:', err);
+            this._logger?.error('Error reading user info:', err);
             return ret; // Return empty user info if there was an error
         }
 
 
     }
 
-    private _logger: IMainLogger = new MainLogger("EntryAuthService");
+    // private _logger?: IMainLogger = undefined
+   private _logger = new MainLogger("EntryAuthService");
 
 
 
@@ -123,9 +124,9 @@ export class EntryAuthService
         // create new dir to save cred
         try {
             fs.mkdirSync(AUTH_DIR, { recursive: true });
-            this._logger.log(`Directory created for user: ${name}`);
+            this._logger?.log(`Directory created for user: ${name}`);
         } catch (err) {
-            this._logger.error('Error creating directory:', err);
+            this._logger?.error('Error creating directory:', err);
             return "error-create-auth-dir";
         }
 
@@ -140,7 +141,7 @@ export class EntryAuthService
 
         // Verify if the user already exists
         if (fs.existsSync(USER_INFO_PATH)) {
-            this._logger.error(`User already exists: ${name}`);
+            this._logger?.error(`User already exists: ${name}`);
             return "user-already-exists"; // User already exists
         }
 
@@ -153,10 +154,10 @@ export class EntryAuthService
                 // JSON.stringify(userInfo)
             );
 
-            this._logger.log(`User info saved for: ${name}`);
+            this._logger?.log(`User info saved for: ${name}`);
         } catch (err) {
 
-            this._logger.error('Error writing user info:', err);
+            this._logger?.error('Error writing user info:', err);
             return "unknown-error";
 
         }
@@ -180,7 +181,7 @@ export class EntryAuthService
 
         // Check if user info file exists
         if (!fs.existsSync(USER_INFO_PATH)) {
-            this._logger.error(`User info file does not exist`);
+            this._logger?.error(`User info file does not exist`);
             return "user-not-found"; // User does not exist
         }
 
@@ -191,20 +192,17 @@ export class EntryAuthService
             // userInfo = JSON.parse(data);
             userInfo = JSON.parse(base64Coder.defaultDecode(data));
         } catch (err) {
-            this._logger.error('Error reading user info:', err);
+            this._logger?.error('Error reading user info:', err);
             return "unknown-error"; // Error reading user info
         }
 
         // Verify password
-        this._logger.log(`Verifying password for user: ${userInfo.name}`, {
-            receivedPlainText: password,
-            storedHashedPassword: userInfo.password
-        });
+        this._logger?.log(`Verifying password for user: ${userInfo.name}`);
         const verified: boolean = await argon2Coder.defaultVerify(password, userInfo.password)
 
 
         if (!verified) {
-            this._logger.error(`Password verification failed`);
+            this._logger?.error(`Password verification failed`);
             return "password-verification-failed";
         }
 
@@ -218,9 +216,10 @@ export class EntryAuthService
 
 
     async logout(): Promise<void> {
+        this._logger.log("Start logging out")
         AppContext.getInstance().updateEntryKey(""); // Clear the entry key
         this.currentAuthState = "not-logged-in"
-        this._logger.log(`User logged out successfully`);
+        this._logger?.log(`User logged out successfully`);
     }
 
 }

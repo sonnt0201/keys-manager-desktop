@@ -14,7 +14,8 @@ export class SecondAuthWithPIN implements ISecondAuthService {
 
     private _argon2Coder = new Argon2Coder();
     private _appContext = AppContext.getInstance();
-    private _logger: IMainLogger | undefined = new MainLogger("SecondAuthWithPIN");
+    private _logger: IMainLogger | undefined = undefined;
+    // private _logger: IMainLogger | undefined = new MainLogger("SecondAuthWithPIN");
     async createSecondAuth(plainSecondAuthInput: string): Promise<SecondAuthResult> {
         const seed = this._appContext.entryKey
         if (!seed) return "entry-auth-failed"

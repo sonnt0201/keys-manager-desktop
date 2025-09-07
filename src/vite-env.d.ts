@@ -24,6 +24,7 @@ interface Window {
      */
     login: (password: string) => Promise<EntryAuthResult>
 
+    logout: () => void
     /**
      * Check if a user already exists.
      * @returns null if user does not exist, otherwise {@link IUserCredModel}

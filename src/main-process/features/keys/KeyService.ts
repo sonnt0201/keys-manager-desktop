@@ -25,7 +25,8 @@ export class KeyService implements IKeyService {
     private _sha256Coder: Sha256Coder = new Sha256Coder();
     private _aesCrypto: AESCrypto = new AESCrypto();
     private _base64Coder: Base64Coder = new Base64Coder();
-    private _logger: IMainLogger | null = new MainLogger("KeyService");
+    private _logger: IMainLogger | null = null;
+    // private _logger: IMainLogger | null = new MainLogger("KeyService");
 
     constructor(repo: IKeyRepository,
         secondAuthService: ISecondAuthService,
