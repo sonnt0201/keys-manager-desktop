@@ -1,0 +1,6 @@
+declare type SecondAuthResult = "success"
+    | "entry-auth-failed"
+    | "auth-method-not-set"
+    | "authentication-failed"
+    | "unknown-error"
+    | "auth-method-already-set"
