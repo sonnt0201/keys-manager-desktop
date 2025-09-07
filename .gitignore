@@ -36,3 +36,6 @@ yarn.lock
 *.sqlite
 *.db
 *.db-journal
+
+# auth file
+.auth
