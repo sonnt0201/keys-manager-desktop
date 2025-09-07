@@ -60,7 +60,7 @@ export class KeyService implements IKeyService {
 
         // auth both step first
         if (!this._appContext.entryKey) return "entry-auth-failed";
-        if (!this._secondAuthService.verifySecondAuth(plainPin)) return "second-auth-failed"
+        if (await this._secondAuthService.verifySecondAuth(plainPin) !== 'success') return "second-auth-failed"
 
         try {
             // # do aes encrypt
@@ -191,7 +191,7 @@ export class KeyService implements IKeyService {
         // # auth first (both step)
 
         if (!this._appContext.entryKey) return ({ result: "entry-auth-failed" });
-        if (!this._secondAuthService.verifySecondAuth(secondTimePassword)) return ({ result: "second-auth-failed" })
+        if (await this._secondAuthService.verifySecondAuth(secondTimePassword) !== 'success') return ({ result: "second-auth-failed" })
 
         // # auth ok, now try to decrypt 
         const encryptedValue = key.encryptedValue
@@ -290,7 +290,9 @@ export class KeyService implements IKeyService {
         /// if update key's value, must operate like {@link createKey}
         // auth both step first
        
-        if (!plainPin || !this._secondAuthService.verifySecondAuth(plainPin)) return "second-auth-failed"
+        if (!plainPin || 
+           await this._secondAuthService.verifySecondAuth(plainPin) !== "success"
+        ) return "second-auth-failed"
 
         try {
             // # do aes encrypt

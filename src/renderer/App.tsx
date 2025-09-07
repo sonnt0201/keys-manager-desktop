@@ -6,11 +6,16 @@ import './App.css'
 import AuthPage from './pages/auth'
 import { useEntryAuthState } from './hooks/useAuthState'
 import DashboardPage from './pages/dashboard'
+import { SecondAuthRegisterCheck } from './pages/auth/SecondAuthRegisterCheck'
 function App() {
   const [count, setCount] = useState(0)
 
   // const {authState, updateAuthState} = useEntryAuthState();
   const [authState, setAuthState] = useState<EntryAuthResult | "loading" | null>("loading")
+
+  /** to receive auth all done state from {@link AuthPage} */ 
+  const [authAllDone, setAuthAllDone]  = useState(false)
+
   useEffect(() => {
     window.ipcRenderer.echo("Hello from Renderer!").then((res) => {
       console.log('Echo response:', res)
@@ -44,8 +49,13 @@ function App() {
 
   return (
     <div className='App'>
-      {authState !== "logged-in" && <AuthPage authState={authState} />}
-      {authState === "logged-in" && (
+      {!authAllDone && <AuthPage authState={authState} 
+      allDone={() => setAuthAllDone(true)}
+      />}
+      
+     
+
+      { authAllDone && (
         <DashboardPage />
       )}
 

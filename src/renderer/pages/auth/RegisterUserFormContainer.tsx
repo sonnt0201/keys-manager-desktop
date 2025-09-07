@@ -74,7 +74,7 @@ export const RegisterUserFormContainer = ({
         <RegisterUserForm
 
             onSubmit={(user: IUserCredModel) => {
-                console.log("Registering from container: ", user);
+                // console.log("Registering from container: ", user);
                 doRegister(user);
             }
             }

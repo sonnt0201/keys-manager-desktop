@@ -6,6 +6,7 @@ import { KeyEditDialog } from "./KeyEditDialog";
 // import { PinInputDialog } from "./PinInputDialog";
 import AddIcon from '@mui/icons-material/Add';
 import FloatingLogoutButton from "./FloatingLogoutButton";
+import { SecondAuthRegisterCheck } from "../auth/SecondAuthRegisterCheck";
 const Entry = () => {
 
 
@@ -17,6 +18,7 @@ const Entry = () => {
 
     return (<Box 
     >
+      
         <KeyTableContainer />
        <FloatingLogoutButton
        confirm

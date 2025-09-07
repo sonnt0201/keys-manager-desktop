@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 export const SecondAuthRegisterCheck = ({
     onStateChanged
 }: {
+    /** All sucess will result {@link SecondAuthResult "auth-method-already-set"} */
     onStateChanged?: (secondAuthState?: SecondAuthResult) => void;
 }) => {
     const [openSecondAuthDialog, setOpenSecondAuthDialog] = useState(false);
